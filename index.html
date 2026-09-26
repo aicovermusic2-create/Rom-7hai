@@ -22,7 +22,7 @@
         <div id="gameGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
             
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
+            <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
                 <div>
                     <!-- รูปภาพปกเกม (เปลี่ยนลิงก์รูปภาพใน src ได้ตามต้องการ) -->
                     <img src="https://raw.githubusercontent.com/aicovermusic2-create/Rom-7hai/main/images/r2_c1212da8-4b62-4329-8e14-e35d8687f3d3.png" alt="Game Cover" class="w-full h-48 object-cover">
@@ -44,7 +44,7 @@
                 </div>
             </div>
             
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
+            <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
                 <div>
                     <!-- รูปภาพปกเกม (เปลี่ยนลิงก์รูปภาพใน src ได้ตามต้องการ) -->
                     <img src="https://raw.githubusercontent.com/aicovermusic2-create/Rom-7hai/main/images/6bc8d8c3-842a-4074-b61d-6abeb1741fd2.jpg" alt="Game Cover" class="w-full h-48 object-cover">
@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
+            <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
                 <div>
                     <!-- รูปภาพปกเกม (เปลี่ยนลิงก์รูปภาพใน src ได้ตามต้องการ) -->
                     <img src="https://raw.githubusercontent.com/aicovermusic2-create/Rom-7hai/main/images/06b5d1b2-1b55-4ea5-b467-791e6b3fd00a.png" alt="Game Cover" class="w-full h-48 object-cover">
@@ -88,7 +88,7 @@
                 </div>
             </div>
             
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
+            <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
                 <div>
                     <!-- รูปภาพปกเกม (เปลี่ยนลิงก์รูปภาพใน src ได้ตามต้องการ) -->
                     <img src="https://raw.githubusercontent.com/aicovermusic2-create/Rom-7hai/main/images/a2331b18-0475-4f67-bb6a-9f928fe62474.jpg" alt="Game Cover" class="w-full h-48 object-cover">
@@ -110,7 +110,7 @@
                 </div>
             </div>
             <!-- ตัวอย่างการ์ดเกมพร้อมรูปภาพ -->
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
+            <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
                 <div>
                     <!-- รูปภาพปกเกม (เปลี่ยนลิงก์รูปภาพใน src ได้ตามต้องการ) -->
                     <img src="https://raw.githubusercontent.com/aicovermusic2-create/Rom-7hai/main/images/2da87ffb-f811-4e2e-98ae-701077561997.jpg" alt="Game Cover" class="w-full h-48 object-cover">
@@ -132,7 +132,7 @@
                 </div>
             </div>
 
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
+            <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
                 <div>
                     <!-- รูปภาพปกเกม (เปลี่ยนลิงก์รูปภาพใน src ได้ตามต้องการ) -->
                     <img src="https://raw.githubusercontent.com/aicovermusic2-create/Rom-7hai/main/images/19e5ea49-c014-48f8-8f5c-5447fb66c1a0.jpg" alt="Game Cover" class="w-full h-48 object-cover">
@@ -161,5 +161,35 @@
 
         </div>
     </main>
+    <script>
+    // ดึงค่าช่องค้นหาและกลุ่มการ์ดเกมทั้งหมดมาใช้งาน
+    const searchBox = document.getElementById('searchBox');
+    const gameGrid = document.getElementById('gameGrid');
+    
+    if (searchBox && gameGrid) {
+        const gameCards = gameGrid.getElementsByClassName('game-card');
+
+        searchBox.addEventListener('keyup', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+
+            for (let i = 0; i < gameCards.length; i++) {
+                const card = gameCards[i];
+                // ค้นหาจากชื่อเกมข้างในแท็ก h3
+                const titleElement = card.querySelector('h3');
+                
+                if (titleElement) {
+                    const titleText = titleElement.textContent.toLowerCase();
+                    
+                    // ถ้าข้อความที่พิมพ์ตรงกับชื่อเกม ให้แสดงขึ้นมา ถ้าไม่ตรงให้ซ่อน
+                    if (titleText.includes(searchTerm)) {
+                        card.style.display = "";
+                    } else {
+                        card.style.display = "none";
+                    }
+                }
+            }
+        });
+    }
+</script>
 </body>
 </html>
