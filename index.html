@@ -167,14 +167,54 @@
     const gameGrid = document.getElementById('gameGrid');
     
     if (searchBox && gameGrid) {
-        const gameCards = gameGrid.getElementsByClassName('game-card');
+        // เปลี่ยนเป็น Array.from เพื่อให้สามารถใช้ฟังก์ชัน .sort() จัดเรียงการ์ดได้
+        let gameCards = Array.from(gameGrid.getElementsByClassName('game-card'));
 
+        // ฟังก์ชันสำหรับแปลงข้อความวันที่ไทย (เช่น "21 สิงหาคม 2569") ให้เป็นตัวเลขสำหรับเปรียบเทียบ
+        function parseThaiDate(card) {
+            const pTags = card.querySelectorAll('p');
+            let dateText = '';
+            
+            // วนหา p tag ที่มีคำว่า "วันที่"
+            for (let p of pTags) {
+                if (p.textContent.includes('วันที่')) {
+                    dateText = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
+                    break;
+                }
+            }
+            if (!dateText) return 0;
+
+            const months = {
+                "มกราคม": 0, "กุมภาพันธ์": 1, "มีนาคม": 2, "เมษายน": 3,
+                "พฤษภาคม": 4, "มิถุนายน": 5, "กรกฎาคม": 6, "สิงหาคม": 7,
+                "กันยายน": 8, "ตุลาคม": 9, "พฤศจิกายน": 10, "ธันวาคม": 11
+            };
+
+            const parts = dateText.split(' ');
+            if (parts.length >= 3) {
+                const day = parseInt(parts[0], 10);
+                const month = months[parts[1]];
+                // แปลงปี พ.ศ. เป็น ค.ศ. (ลบ 543)
+                const year = parseInt(parts[2], 10) - 543;
+                
+                if (!isNaN(day) && month !== undefined && !isNaN(year)) {
+                    return new Date(year, month, day).getTime();
+                }
+            }
+            return 0;
+        }
+
+        // จัดเรียงการ์ดเกมตามวันที่ จาก "ใหม่ไปเก่า"
+        gameCards.sort((a, b) => parseThaiDate(b) - parseThaiDate(a));
+
+        // นำการ์ดที่เรียงลำดับแล้วใส่กลับเข้าไปแสดงผลในหน้าเว็บใหม่
+        gameCards.forEach(card => gameGrid.appendChild(card));
+
+        // ระบบค้นหาเกม (ทำงานร่วมกับการ์ดที่จัดเรียงแล้ว)
         searchBox.addEventListener('keyup', function(e) {
             const searchTerm = e.target.value.toLowerCase();
 
-            for (let i = 0; i < gameCards.length; i++) {
-                const card = gameCards[i];
-                // ค้นหาจากชื่อเกมข้างในแท็ก h3
+            gameCards.forEach(card => {
                 const titleElement = card.querySelector('h3');
                 
                 if (titleElement) {
@@ -187,7 +227,7 @@
                         card.style.display = "none";
                     }
                 }
-            }
+            });
         });
     }
 </script>
