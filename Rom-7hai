@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROM 7 Thai - คลังแพตช์เกมแปลไทย</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4 text-center">
+        <h1 class="text-3xl font-bold text-emerald-400">ROM 7 Thai 🎮</h1>
+        <p class="text-slate-400 mt-2">ศูนย์รวมแพตช์แปลไทยเกมคอนโซลและเรโทร</p>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-4 mt-6">
+        <div class="mb-6">
+            <input type="text" id="searchBox" placeholder="ค้นหาชื่อเกม..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div id="gameGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <!-- การ์ดเกมตัวอย่าง -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col justify-between hover:border-emerald-500 transition">
+                <div>
+                    <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold">PS1</span>
+                    <h3 class="text-lg font-bold mt-3">Harvest Moon: Back to Nature</h3>
+                    <p class="text-sm text-slate-400 mt-1">แพตช์แปลไทย V1.0 - สมบูรณ์ 100%</p>
+                </div>
+                <a href="#" target="_blank" class="mt-4 block text-center bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg font-medium transition">ดาวน์โหลดแพตช์</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
