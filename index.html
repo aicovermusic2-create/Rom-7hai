@@ -47,12 +47,9 @@
         <span class="dot"></span>
         <span id="site-last-modified">อัปเดตล่าสุด: กำลังโหลด...</span>
     </div>
-	<div style="font-size: 12px; color: #a7f3d0;">
-    ผู้เข้าชม: <span id="visitor-count" style="font-weight: bold; color: #fff;">กำลังโหลด...</span> คน
-   </div>
-    <!--<div style="font-size: 12px; color: #a7f3d0;">
+    <div style="font-size: 12px; color: #a7f3d0;">
         Real-time Update ⚡
-    </div>-->
+    </div>
 </div>
     </header>
 
@@ -9959,23 +9956,6 @@ document.addEventListener("DOMContentLoaded", function() {
     if (updateBar) {
         updateBar.innerHTML = `อัปเดตล่าสุด: <b>${formattedDate}</b>`;
     }
-});
-// ตัวอย่างจำลองการดึงสถิติ หรือเชื่อมต่อกับ API นับยอดเข้าชม
-document.addEventListener("DOMContentLoaded", function() {
-    // ใช้บริการนับจำนวนครั้งที่เปิดหน้าเว็บ (Hit Counter API ฟรี)
-    // เปลี่ยน namespace และ key เป็นชื่อเว็บของคุณได้ครับ
-    fetch('https://api.counterapi.dev/v1/r8m-thai/visits/up')
-        .then(response => response.json())
-        .then(data => {
-            const counterEl = document.getElementById('visitor-count');
-            if (counterEl && data.value) {
-                counterEl.textContent = data.value.toLocaleString(); // แสดงตัวเลขจริง เช่น 1, 2, 3...
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching visitor count:', error);
-            document.getElementById('visitor-count').textContent = '-';
-        });
 });
 </script>
 </body>
