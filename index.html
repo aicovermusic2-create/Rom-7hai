@@ -45,11 +45,11 @@
 		<div class="website-update-bar">
     <div class="update-text">
         <span class="dot"></span>
-        <span id="site-last-modified">อัปเดตล่าสุด: กำลังโหลด...</span>
+        <span>อัปเดตล่าสุด: <b>1 ตุลาคม 2569 เวลา 11:35 น.</b></span>
     </div>
-    <div style="font-size: 12px; color: #a7f3d0;">
+    <!-- <div style="font-size: 12px; color: #a7f3d0;">
         Real-time Update ⚡
-    </div>
+    </div>-->
 </div>
     </header>
 
@@ -9929,32 +9929,6 @@
             return new Date(year, month, day).getTime();
         }
         return 0;
-    }
-});
-document.addEventListener("DOMContentLoaded", function() {
-    // ดึงเวลาอัปเดตล่าสุดของไฟล์เว็บเพจ
-    const lastMod = new Date(document.lastModified);
-    
-    // แปลงเป็นเดือนภาษาไทย
-    const thaiMonths = [
-        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-    ];
-    
-    const day = lastMod.getDate();
-    const month = thaiMonths[lastMod.getMonth()];
-    const year = lastMod.getFullYear() + 543; // แปลงเป็น พ.ศ.
-    
-    // ดึงเวลา ชั่วโมง:นาที
-    const hours = String(lastMod.getHours()).padStart(2, '0');
-    const minutes = String(lastMod.getMinutes()).padStart(2, '0');
-    
-    const formattedDate = `${day} ${month} ${year} เวลา ${hours}:${minutes} น.`;
-    
-    // แสดงผลที่แถบ
-    const updateBar = document.getElementById('site-last-modified');
-    if (updateBar) {
-        updateBar.innerHTML = `อัปเดตล่าสุด: <b>${formattedDate}</b>`;
     }
 });
 </script>
