@@ -22,7 +22,7 @@
         border-radius: 0.75rem;
     }
 
-    /* สไตล์ป้ายคาดเฉียงมุมซ้ายบน (Ribbon Badge) คำว่า UPDATE ทั้งหมด */
+    /* สไตล์พื้นฐานป้ายคาดเฉียงมุมซ้ายบน (Ribbon Badge) */
     .update-badge {
         position: absolute !important;
         top: 15px !important;
@@ -30,7 +30,6 @@
         transform: rotate(-45deg) !important;
         width: 120px !important;
         text-align: center !important;
-        background-color: #f59e0b !important; /* สีส้มทอง */
         color: white !important;
         font-size: 0.65rem !important;
         font-weight: 700 !important;
@@ -38,6 +37,16 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
         z-index: 10 !important;
         letter-spacing: 0.05em !important;
+    }
+
+    /* สีส้มสำหรับ UPDATE (เกมชื่อซ้ำ) */
+    .update-badge.update-orange {
+        background-color: #f59e0b !important; 
+    }
+
+    /* สีเขียวสำหรับ NEW (เกมใหม่ชื่อไม่ซ้ำ) */
+    .update-badge.update-green {
+        background-color: #10b981 !important; 
     }
 
     /* จัดระเบียบปุ่มเปลี่ยนหน้า (Pagination) ด้านล่างให้อยู่ตรงกลางและตัดบรรทัดเมื่อล้นจอ */
@@ -9761,473 +9770,489 @@
     </main>
    <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const itemsPerPage = 21; // แสดงหน้าละ 21 เกม
-        let currentPage = 1;
-        let selectedModderSystem = "";
+    const itemsPerPage = 21; // แสดงหน้าละ 21 เกม
+    let currentPage = 1;
+    let selectedModderSystem = "";
 
-        const searchBox = document.getElementById('searchBox');
-        const systemFilter = document.getElementById('systemFilter');
-        const authorFilter = document.getElementById('authorFilter');
-        const modeSystem = document.getElementById('modeSystem');
-        const modeAuthor = document.getElementById('modeAuthor');
-        const gameGrid = document.getElementById('gameGrid');
+    const searchBox = document.getElementById('searchBox');
+    const systemFilter = document.getElementById('systemFilter');
+    const authorFilter = document.getElementById('authorFilter');
+    const modeSystem = document.getElementById('modeSystem');
+    const modeAuthor = document.getElementById('modeAuthor');
+    const gameGrid = document.getElementById('gameGrid');
 
-        if (!gameGrid) return;
+    if (!gameGrid) return;
 
-        let gameCards = Array.from(gameGrid.getElementsByClassName('game-card'));
+    let gameCards = Array.from(gameGrid.getElementsByClassName('game-card'));
 
-        // 1. ฟังก์ชันแปลงวันที่ไทยแบบยืดหยุ่น
-        function parseThaiDateText(dateText) {
-            if (!dateText || dateText === '-' || dateText === '') return 0;
+    // 1. ฟังก์ชันแปลงวันที่ไทยแบบยืดหยุ่น
+    function parseThaiDateText(dateText) {
+        if (!dateText || dateText === '-' || dateText === '') return 0;
 
-            const months = {
-                "มกราคม": 0, "ม.ค.": 0, "มค": 0,
-                "กุมภาพันธ์": 1, "ก.พ.": 1, "กพ": 1,
-                "มีนาคม": 2, "มี.ค.": 2, "มีค": 2,
-                "เมษายน": 3, "เม.ย.": 3, "เมย": 3,
-                "พฤษภาคม": 4, "พ.ค.": 4, "พค": 4,
-                "มิถุนายน": 5, "มิ.ย.": 5, "มิย": 5,
-                "กรกฎาคม": 6, "ก.ค.": 6, "กค": 6,
-                "สิงหาคม": 7, "สิงหา": 7, "ส.ค.": 7, "สค": 7,
-                "กันยายน": 8, "ก.ย.": 8, "กย": 8,
-                "ตุลาคม": 9, "ต.ค.": 9, "ตค": 9,
-                "พฤศจิกายน": 10, "พ.ย.": 10, "พย": 10,
-                "ธันวาคม": 11, "ธ.ค.": 11, "ธค": 11
-            };
+        const months = {
+            "มกราคม": 0, "ม.ค.": 0, "มค": 0,
+            "กุมภาพันธ์": 1, "ก.พ.": 1, "กพ": 1,
+            "มีนาคม": 2, "มี.ค.": 2, "มีค": 2,
+            "เมษายน": 3, "เม.ย.": 3, "เมย": 3,
+            "พฤษภาคม": 4, "พ.ค.": 4, "พค": 4,
+            "มิถุนายน": 5, "มิ.ย.": 5, "มิย": 5,
+            "กรกฎาคม": 6, "ก.ค.": 6, "กค": 6,
+            "สิงหาคม": 7, "สิงหา": 7, "ส.ค.": 7, "สค": 7,
+            "กันยายน": 8, "ก.ย.": 8, "กย": 8,
+            "ตุลาคม": 9, "ต.ค.": 9, "ตค": 9,
+            "พฤศจิกายน": 10, "พ.ย.": 10, "พย": 10,
+            "ธันวาคม": 11, "ธ.ค.": 11, "ธค": 11
+        };
 
-            let day = 0, month = -1, year = 2026;
-            const parts = dateText.split(/\s+/);
-            
-            for (let part of parts) {
-                if (!isNaN(part) && day === 0 && parseInt(part, 10) <= 31) {
-                    day = parseInt(part, 10);
-                } else if (months[part] !== undefined) {
-                    month = months[part];
-                } else if (!isNaN(part) && parseInt(part, 10) > 31) {
-                    let y = parseInt(part, 10);
-                    if (y < 100) y += 2500;
-                    year = y - 543;
-                }
+        let day = 0, month = -1, year = 2026;
+        const parts = dateText.split(/\s+/);
+        
+        for (let part of parts) {
+            if (!isNaN(part) && day === 0 && parseInt(part, 10) <= 31) {
+                day = parseInt(part, 10);
+            } else if (months[part] !== undefined) {
+                month = months[part];
+            } else if (!isNaN(part) && parseInt(part, 10) > 31) {
+                let y = parseInt(part, 10);
+                if (y < 100) y += 2500;
+                year = y - 543;
             }
-
-            if (day > 0 && month !== -1) {
-                return new Date(year, month, day).getTime();
-            }
-            return 0;
         }
 
-        // 2. ดึงรายชื่อระบบทั้งหมดมาใส่ Combobox พร้อมนับจำนวน
-        function populateSystems() {
-            if (!systemFilter) return;
+        if (day > 0 && month !== -1) {
+            return new Date(year, month, day).getTime();
+        }
+        return 0;
+    }
 
-            const systemsSet = new Set();
-            gameCards.forEach(card => {
+    // 2. ดึงรายชื่อระบบทั้งหมดมาใส่ Combobox พร้อมนับจำนวน
+    function populateSystems() {
+        if (!systemFilter) return;
+
+        const systemsSet = new Set();
+        gameCards.forEach(card => {
+            const pTags = card.querySelectorAll('p');
+            for (let p of pTags) {
+                if (p.textContent.includes('ระบบ')) {
+                    let sys = p.textContent.replace('ระบบ :', '').replace('ระบบ', '').trim();
+                    if (sys) systemsSet.add(sys);
+                    break;
+                }
+            }
+        });
+
+        const currentSelected = systemFilter.value;
+        systemFilter.innerHTML = `<option value="">All Games (${gameCards.length})</option>`;
+        
+        Array.from(systemsSet).sort().forEach(system => {
+            const count = gameCards.filter(card => {
                 const pTags = card.querySelectorAll('p');
                 for (let p of pTags) {
                     if (p.textContent.includes('ระบบ')) {
-                        let sys = p.textContent.replace('ระบบ :', '').replace('ระบบ', '').trim();
-                        if (sys) systemsSet.add(sys);
-                        break;
+                        let s = p.textContent.replace('ระบบ :', '').replace('ระบบ', '').trim();
+                        return s.toLowerCase() === system.toLowerCase();
                     }
                 }
-            });
+                return false;
+            }).length;
 
-            const currentSelected = systemFilter.value;
-            systemFilter.innerHTML = `<option value="">All Games (${gameCards.length})</option>`;
-            
-            Array.from(systemsSet).sort().forEach(system => {
-                const count = gameCards.filter(card => {
-                    const pTags = card.querySelectorAll('p');
-                    for (let p of pTags) {
-                        if (p.textContent.includes('ระบบ')) {
-                            let s = p.textContent.replace('ระบบ :', '').replace('ระบบ', '').trim();
-                            return s.toLowerCase() === system.toLowerCase();
-                        }
+            const option = document.createElement('option');
+            option.value = system.toLowerCase();
+            option.textContent = `${system} (${count})`;
+            systemFilter.appendChild(option);
+        });
+
+        systemFilter.value = currentSelected;
+    }
+
+    // 3. ดึงรายชื่อผู้จัดทำมาใส่ Combobox เรียงตามจำนวนเกม
+    function populateAuthors() {
+        if (!authorFilter) return;
+
+        const authorCounts = {};
+        gameCards.forEach(card => {
+            const pTags = card.querySelectorAll('p');
+            for (let p of pTags) {
+                if (p.textContent.includes('โดย')) {
+                    let author = p.textContent.replace('โดย :', '').replace('โดย', '').trim();
+                    if (author) {
+                        authorCounts[author] = (authorCounts[author] || 0) + 1;
                     }
-                    return false;
-                }).length;
-
-                const option = document.createElement('option');
-                option.value = system.toLowerCase();
-                option.textContent = `${system} (${count})`;
-                systemFilter.appendChild(option);
-            });
-
-            systemFilter.value = currentSelected;
-        }
-
-        // 3. ดึงรายชื่อผู้จัดทำมาใส่ Combobox เรียงตามจำนวนเกม
-        function populateAuthors() {
-            if (!authorFilter) return;
-
-            const authorCounts = {};
-            gameCards.forEach(card => {
-                const pTags = card.querySelectorAll('p');
-                for (let p of pTags) {
-                    if (p.textContent.includes('โดย')) {
-                        let author = p.textContent.replace('โดย :', '').replace('โดย', '').trim();
-                        if (author) {
-                            authorCounts[author] = (authorCounts[author] || 0) + 1;
-                        }
-                        break;
-                    }
+                    break;
                 }
-            });
-
-            const currentSelected = authorFilter.value;
-            authorFilter.innerHTML = `<option value="">All Modders (${Object.keys(authorCounts).length})</option>`;
-            
-            const sortedAuthors = Object.keys(authorCounts).sort((a, b) => {
-                if (authorCounts[b] !== authorCounts[a]) {
-                    return authorCounts[b] - authorCounts[a];
-                }
-                return a.localeCompare(b);
-            });
-
-            sortedAuthors.forEach(author => {
-                const count = authorCounts[author];
-                const option = document.createElement('option');
-                option.value = author.toLowerCase();
-                option.textContent = `${author} (${count})`;
-                authorFilter.appendChild(option);
-            });
-
-            authorFilter.value = currentSelected;
-        }
-
-        // 4. จัดการแถบปุ่มเลือก System ย่อยของ Modder
-        function updateModderSystemButtons(selectedModder) {
-            const container = document.getElementById('modderSystemsContainer');
-            const buttonsWrapper = document.getElementById('modderSystemButtons');
-            
-            if (!container || !buttonsWrapper) return;
-
-            if (!modeAuthor || !modeAuthor.checked || !selectedModder || selectedModder === "") {
-                container.classList.add('hidden');
-                buttonsWrapper.innerHTML = '';
-                selectedModderSystem = "";
-                return;
             }
+        });
 
-            const cardsByModder = gameCards.filter(card => {
-                const pTags = card.querySelectorAll('p');
-                let author = "";
-                for (let p of pTags) {
-                    if (p.textContent.includes('โดย')) {
-                        author = p.textContent.replace('โดย :', '').replace('โดย', '').trim().toLowerCase();
-                        break;
-                    }
-                }
-                return author === selectedModder.toLowerCase();
-            });
-
-            const systemsSet = new Set();
-            cardsByModder.forEach(card => {
-                const pTags = card.querySelectorAll('p');
-                for (let p of pTags) {
-                    if (p.textContent.includes('ระบบ')) {
-                        let sys = p.textContent.replace('ระบบ :', '').replace('ระบบ', '').trim();
-                        if (sys) systemsSet.add(sys);
-                        break;
-                    }
-                }
-            });
-
-            if (systemsSet.size <= 1) {
-                container.classList.add('hidden');
-                selectedModderSystem = "";
-                return;
+        const currentSelected = authorFilter.value;
+        authorFilter.innerHTML = `<option value="">All Modders (${Object.keys(authorCounts).length})</option>`;
+        
+        const sortedAuthors = Object.keys(authorCounts).sort((a, b) => {
+            if (authorCounts[b] !== authorCounts[a]) {
+                return authorCounts[b] - authorCounts[a];
             }
+            return a.localeCompare(b);
+        });
 
-            container.classList.remove('hidden');
+        sortedAuthors.forEach(author => {
+            const count = authorCounts[author];
+            const option = document.createElement('option');
+            option.value = author.toLowerCase();
+            option.textContent = `${author} (${count})`;
+            authorFilter.appendChild(option);
+        });
+
+        authorFilter.value = currentSelected;
+    }
+
+    // 4. จัดการแถบปุ่มเลือก System ย่อยของ Modder
+    function updateModderSystemButtons(selectedModder) {
+        const container = document.getElementById('modderSystemsContainer');
+        const buttonsWrapper = document.getElementById('modderSystemButtons');
+        
+        if (!container || !buttonsWrapper) return;
+
+        if (!modeAuthor || !modeAuthor.checked || !selectedModder || selectedModder === "") {
+            container.classList.add('hidden');
             buttonsWrapper.innerHTML = '';
+            selectedModderSystem = "";
+            return;
+        }
 
-            // ปุ่ม "ทั้งหมด"
-            const allBtn = document.createElement('button');
-            allBtn.className = `px-3 py-1.5 text-xs rounded-lg font-medium whitespace-nowrap transition ${
-                selectedModderSystem === "" 
+        const cardsByModder = gameCards.filter(card => {
+            const pTags = card.querySelectorAll('p');
+            let author = "";
+            for (let p of pTags) {
+                if (p.textContent.includes('โดย')) {
+                    author = p.textContent.replace('โดย :', '').replace('โดย', '').trim().toLowerCase();
+                    break;
+                }
+            }
+            return author === selectedModder.toLowerCase();
+        });
+
+        const systemsSet = new Set();
+        cardsByModder.forEach(card => {
+            const pTags = card.querySelectorAll('p');
+            for (let p of pTags) {
+                if (p.textContent.includes('ระบบ')) {
+                    let sys = p.textContent.replace('ระบบ :', '').replace('ระบบ', '').trim();
+                    if (sys) systemsSet.add(sys);
+                    break;
+                }
+            }
+        });
+
+        if (systemsSet.size <= 1) {
+            container.classList.add('hidden');
+            selectedModderSystem = "";
+            return;
+        }
+
+        container.classList.remove('hidden');
+        buttonsWrapper.innerHTML = '';
+
+        // ปุ่ม "ทั้งหมด"
+        const allBtn = document.createElement('button');
+        allBtn.className = `px-3 py-1.5 text-xs rounded-lg font-medium whitespace-nowrap transition ${
+            selectedModderSystem === "" 
+                ? 'bg-emerald-600 text-white' 
+                : 'bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+        }`;
+        allBtn.textContent = `ทั้งหมด (${cardsByModder.length}) เกมส์`;
+        allBtn.onclick = () => {
+            selectedModderSystem = "";
+            updateModderSystemButtons(selectedModder);
+            currentPage = 1;
+            filterGames();
+        };
+        buttonsWrapper.appendChild(allBtn);
+
+        // ปุ่มระบบย่อยแต่ละตัว
+        Array.from(systemsSet).sort().forEach(system => {
+            const sysCount = cardsByModder.filter(card => {
+                const pTags = card.querySelectorAll('p');
+                for (let p of pTags) {
+                    if (p.textContent.includes('ระบบ')) {
+                        let s = p.textContent.replace('ระบบ :', '').replace('ระบบ', '').trim();
+                        return s.toLowerCase() === system.toLowerCase();
+                    }
+                }
+                return false;
+            }).length;
+
+            const sysBtn = document.createElement('button');
+            const isSelected = selectedModderSystem.toLowerCase() === system.toLowerCase();
+            
+            sysBtn.className = `px-3 py-1.5 text-xs rounded-lg font-medium transition ${
+                isSelected 
                     ? 'bg-emerald-600 text-white' 
                     : 'bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
             }`;
-            allBtn.textContent = `ทั้งหมด (${cardsByModder.length}) เกมส์`;
-            allBtn.onclick = () => {
-                selectedModderSystem = "";
+            sysBtn.textContent = `${system} (${sysCount})`;
+            
+            sysBtn.onclick = () => {
+                selectedModderSystem = system;
                 updateModderSystemButtons(selectedModder);
                 currentPage = 1;
                 filterGames();
             };
-            buttonsWrapper.appendChild(allBtn);
 
-            // ปุ่มระบบย่อยแต่ละตัว
-            Array.from(systemsSet).sort().forEach(system => {
-                const sysCount = cardsByModder.filter(card => {
-                    const pTags = card.querySelectorAll('p');
-                    for (let p of pTags) {
-                        if (p.textContent.includes('ระบบ')) {
-                            let s = p.textContent.replace('ระบบ :', '').replace('ระบบ', '').trim();
-                            return s.toLowerCase() === system.toLowerCase();
-                        }
-                    }
-                    return false;
-                }).length;
+            buttonsWrapper.appendChild(sysBtn);
+        });
+    }
 
-                const sysBtn = document.createElement('button');
-                const isSelected = selectedModderSystem.toLowerCase() === system.toLowerCase();
-                
-                sysBtn.className = `px-3 py-1.5 text-xs rounded-lg font-medium transition ${
-                    isSelected 
-                        ? 'bg-emerald-600 text-white' 
-                        : 'bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
-                }`;
-                sysBtn.textContent = `${system} (${sysCount})`;
-                
-                sysBtn.onclick = () => {
-                    selectedModderSystem = system;
-                    updateModderSystemButtons(selectedModder);
-                    currentPage = 1;
-                    filterGames();
-                };
-
-                buttonsWrapper.appendChild(sysBtn);
-            });
+    // 5. สลับโหมดการกรอง (ระหว่าง Platforms และ Modders)
+    function handleModeChange() {
+        if (modeSystem && modeAuthor) {
+            if (modeSystem.checked) {
+                systemFilter.classList.remove('hidden');
+                authorFilter.classList.add('hidden');
+                authorFilter.value = ""; 
+                selectedModderSystem = "";
+                updateModderSystemButtons("");
+            } else {
+                systemFilter.classList.add('hidden');
+                authorFilter.classList.remove('hidden');
+                systemFilter.value = ""; 
+                updateModderSystemButtons(authorFilter.value);
+            }
         }
+        currentPage = 1;
+        filterGames();
+    }
 
-        // 5. สลับโหมดการกรอง (ระหว่าง Platforms และ Modders)
-        function handleModeChange() {
-            if (modeSystem && modeAuthor) {
-                if (modeSystem.checked) {
-                    systemFilter.classList.remove('hidden');
-                    authorFilter.classList.add('hidden');
-                    authorFilter.value = ""; 
-                    selectedModderSystem = "";
-                    updateModderSystemButtons("");
-                } else {
-                    systemFilter.classList.add('hidden');
-                    authorFilter.classList.remove('hidden');
-                    systemFilter.value = ""; 
-                    updateModderSystemButtons(authorFilter.value);
+    // 6. อัปเดตการแสดงผล Badge (NEW สีเขียว / UPDATE สีส้ม ตามชื่อเกมซ้ำ)
+    function updateBadges() {
+        // นับจำนวนชื่อเกมที่ซ้ำกันทั้งหมดในระบบ เพื่อแยกแยะ NEW กับ UPDATE
+        const titleCounts = {};
+        gameCards.forEach(card => {
+            const titleElement = card.querySelector('h3');
+            if (titleElement) {
+                let titleText = titleElement.textContent.trim().toLowerCase();
+                titleCounts[titleText] = (titleCounts[titleText] || 0) + 1;
+            }
+        });
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        gameCards.forEach(card => {
+            const imgElement = card.querySelector('img');
+            if (!imgElement) return;
+            const imgContainer = imgElement.parentElement;
+
+            const titleElement = card.querySelector('h3');
+            const pTags = card.querySelectorAll('p');
+            let dateText = '';
+
+            for (let p of pTags) {
+                if (p.textContent.includes('วันที่')) {
+                    dateText = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
+                    break;
                 }
             }
+            if (!dateText || !titleElement) return;
+
+            const gameTimestamp = parseThaiDateText(dateText);
+            if (!gameTimestamp) return;
+
+            const gameDate = new Date(gameTimestamp);
+            gameDate.setHours(0, 0, 0, 0);
+
+            const diffTime = today - gameDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            let titleText = titleElement.textContent.trim().toLowerCase();
+            let isDuplicateName = titleCounts[titleText] > 1;
+
+            // แสดงผล Badge เฉพาะเกมในระยะเวลา 1 วันล่าสุด
+            if (diffDays >= 0 && diffDays <= 1) {
+                if (!imgContainer.querySelector('.update-badge')) {
+                    if (window.getComputedStyle(imgContainer).position === 'static') {
+                        imgContainer.style.position = 'relative';
+                    }
+                    imgContainer.style.overflow = 'hidden';
+
+                    const badge = document.createElement('span');
+                    
+                    if (isDuplicateName) {
+                        // เกมที่มีชื่อซ้ำกัน -> ป้าย UPDATE (สีส้ม)
+                        badge.className = 'update-badge update-orange';
+                        badge.innerText = 'UPDATE';
+                    } else {
+                        // เกมใหม่ที่ไม่มีชื่อซ้ำ -> ป้าย NEW (สีเขียว)
+                        badge.className = 'update-badge update-green';
+                        badge.innerText = 'NEW';
+                    }
+                    imgContainer.appendChild(badge);
+                }
+            } else {
+                const existingBadge = imgContainer.querySelector('.update-badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+            }
+        });
+    }
+
+    // 7. จัดการระบบแบ่งหน้า (Pagination)
+    function updatePagination(filteredCards) {
+        const totalPages = Math.ceil(filteredCards.length / itemsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+
+        gameCards.forEach(card => {
+            card.style.display = 'none';
+        });
+
+        filteredCards.forEach((card, index) => {
+            if (index >= startIndex && index < endIndex) {
+                card.style.display = 'flex';
+            }
+        });
+
+        renderPaginationButtons(totalPages);
+    }
+
+    function renderPaginationButtons(totalPages) {
+        const paginationContainer = document.getElementById('pagination');
+        if (!paginationContainer) return;
+        paginationContainer.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement('button');
+            button.innerText = i;
+            button.className = `px-4 py-2 rounded-xl border text-sm font-medium transition ${
+                i === currentPage
+                    ? 'bg-emerald-600 border-emerald-500 text-white'
+                    : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+            }`;
+
+            button.addEventListener('click', () => {
+                currentPage = i;
+                updatePagination(filteredCardsCache);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            paginationContainer.appendChild(button);
+        }
+    }
+
+    let filteredCardsCache = [];
+
+    // 8. ฟังก์ชันหลักสำหรับกรองและเรียงลำดับเกม
+    function filterGames() {
+        const searchTerm = searchBox ? searchBox.value.toLowerCase() : "";
+        const selectedSystem = systemFilter ? systemFilter.value.toLowerCase().trim() : "";
+        const selectedAuthor = authorFilter ? authorFilter.value.toLowerCase().trim() : "";
+
+        // เรียงลำดับตามวันที่ล่าสุด
+        gameCards.sort((a, b) => {
+            const pTagsA = a.querySelectorAll('p');
+            const pTagsB = b.querySelectorAll('p');
+            let dateA = '', dateB = '';
+            
+            for (let p of pTagsA) {
+                if (p.textContent.includes('วันที่')) {
+                    dateA = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
+                    break;
+                }
+            }
+            for (let p of pTagsB) {
+                if (p.textContent.includes('วันที่')) {
+                    dateB = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
+                    break;
+                }
+            }
+            return parseThaiDateText(dateB) - parseThaiDateText(dateA);
+        });
+
+        gameCards.forEach(card => gameGrid.appendChild(card));
+
+        filteredCardsCache = gameCards.filter(card => {
+            const titleElement = card.querySelector('h3');
+            const pTags = card.querySelectorAll('p');
+            
+            let titleText = titleElement ? titleElement.textContent.toLowerCase() : "";
+            let systemText = "";
+            let authorText = "";
+
+            for (let p of pTags) {
+                if (p.textContent.includes('ระบบ')) {
+                    systemText = p.textContent.toLowerCase();
+                }
+                if (p.textContent.includes('โดย')) {
+                    authorText = p.textContent.toLowerCase();
+                }
+            }
+
+            const matchesSearch = titleText.includes(searchTerm);
+            
+            let matchesCondition = true;
+            if (modeSystem && modeSystem.checked) {
+                if (selectedSystem !== "") {
+                    const cleanSystemText = systemText.replace('ระบบ :', '').replace('ระบบ', '').trim();
+                    matchesCondition = (cleanSystemText === selectedSystem);
+                }
+            } else if (modeAuthor && modeAuthor.checked) {
+                if (selectedAuthor !== "") {
+                    const cleanAuthorText = authorText.replace('โดย :', '').replace('โดย', '').trim();
+                    const matchAuthor = (cleanAuthorText.toLowerCase() === selectedAuthor);
+                    
+                    if (matchAuthor && selectedModderSystem !== "") {
+                        const cleanSystemText = systemText.replace('ระบบ :', '').replace('ระบบ', '').trim();
+                        const matchSubSys = (cleanSystemText.toLowerCase() === selectedModderSystem.toLowerCase());
+                        matchesCondition = matchAuthor && matchSubSys;
+                    } else {
+                        matchesCondition = matchAuthor;
+                    }
+                }
+            }
+
+            return matchesSearch && matchesCondition;
+        });
+
+        updatePagination(filteredCardsCache);
+    }
+
+    // --- เริ่มต้นการทำงาน (Initialization & Event Listeners) ---
+    populateSystems();
+    populateAuthors();
+    updateBadges();
+    filterGames();
+
+    if (searchBox) {
+        searchBox.addEventListener('keyup', () => {
             currentPage = 1;
             filterGames();
-        }
+        });
+    }
+    
+    if (systemFilter) {
+        systemFilter.value = "";
+        systemFilter.addEventListener('change', () => {
+            currentPage = 1;
+            filterGames();
+        });
+    }
 
-        // 6. อัปเดตการแสดงผล Badge (NEW / UPDATE) บนรูปภาพการ์ดเกม
-        function updateBadges() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+    if (authorFilter) {
+        authorFilter.value = "";
+        authorFilter.addEventListener('change', () => {
+            currentPage = 1;
+            selectedModderSystem = ""; 
+            updateModderSystemButtons(authorFilter.value);
+            filterGames();
+        });
+    }
 
-            gameCards.forEach(card => {
-                const imgElement = card.querySelector('img');
-                if (!imgElement) return;
-                const imgContainer = imgElement.parentElement;
-
-                const pTags = card.querySelectorAll('p');
-                let dateText = '';
-                let cardTextContent = card.textContent;
-
-                for (let p of pTags) {
-                    if (p.textContent.includes('วันที่')) {
-                        dateText = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
-                        break;
-                    }
-                }
-                if (!dateText) return;
-
-                const gameTimestamp = parseThaiDateText(dateText);
-                if (!gameTimestamp) return;
-
-                const gameDate = new Date(gameTimestamp);
-                gameDate.setHours(0, 0, 0, 0);
-
-                const diffTime = today - gameDate;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-                // แสดงผล Badge เฉพาะเกมในระยะเวลา 1 วันล่าสุด
-                if (diffDays >= 0 && diffDays <= 1) {
-                    if (!imgContainer.querySelector('.update-badge')) {
-                        if (window.getComputedStyle(imgContainer).position === 'static') {
-                            imgContainer.style.position = 'relative';
-                        }
-                        imgContainer.style.overflow = 'hidden';
-
-                        const badge = document.createElement('span');
-                        if (cardTextContent.includes('Patch : V1.') || cardTextContent.includes('UPDATE')) {
-                            badge.className = 'update-badge update-type';
-                            badge.innerText = 'UPDATE';
-                        } else {
-                            badge.className = 'update-badge';
-                            badge.innerText = 'NEW';
-                        }
-                        imgContainer.appendChild(badge);
-                    }
-                } else {
-                    const existingBadge = imgContainer.querySelector('.update-badge');
-                    if (existingBadge) {
-                        existingBadge.remove();
-                    }
-                }
-            });
-        }
-
-        // 7. จัดการระบบแบ่งหน้า (Pagination)
-        function updatePagination(filteredCards) {
-            const totalPages = Math.ceil(filteredCards.length / itemsPerPage) || 1;
-            if (currentPage > totalPages) currentPage = 1;
-
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-
-            gameCards.forEach(card => {
-                card.style.display = 'none';
-            });
-
-            filteredCards.forEach((card, index) => {
-                if (index >= startIndex && index < endIndex) {
-                    card.style.display = 'flex';
-                }
-            });
-
-            renderPaginationButtons(totalPages);
-        }
-
-        function renderPaginationButtons(totalPages) {
-            const paginationContainer = document.getElementById('pagination');
-            if (!paginationContainer) return;
-            paginationContainer.innerHTML = '';
-
-            for (let i = 1; i <= totalPages; i++) {
-                const button = document.createElement('button');
-                button.innerText = i;
-                button.className = `px-4 py-2 rounded-xl border text-sm font-medium transition ${
-                    i === currentPage
-                        ? 'bg-emerald-600 border-emerald-500 text-white'
-                        : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
-                }`;
-
-                button.addEventListener('click', () => {
-                    currentPage = i;
-                    updatePagination(filteredCardsCache);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-
-                paginationContainer.appendChild(button);
-            }
-        }
-
-        let filteredCardsCache = [];
-
-        // 8. ฟังก์ชันหลักสำหรับกรองและเรียงลำดับเกม
-        function filterGames() {
-            const searchTerm = searchBox ? searchBox.value.toLowerCase() : "";
-            const selectedSystem = systemFilter ? systemFilter.value.toLowerCase().trim() : "";
-            const selectedAuthor = authorFilter ? authorFilter.value.toLowerCase().trim() : "";
-
-            // เรียงลำดับตามวันที่ล่าสุด
-            gameCards.sort((a, b) => {
-                const pTagsA = a.querySelectorAll('p');
-                const pTagsB = b.querySelectorAll('p');
-                let dateA = '', dateB = '';
-                
-                for (let p of pTagsA) {
-                    if (p.textContent.includes('วันที่')) {
-                        dateA = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
-                        break;
-                    }
-                }
-                for (let p of pTagsB) {
-                    if (p.textContent.includes('วันที่')) {
-                        dateB = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
-                        break;
-                    }
-                }
-                return parseThaiDateText(dateB) - parseThaiDateText(dateA);
-            });
-
-            gameCards.forEach(card => gameGrid.appendChild(card));
-
-            filteredCardsCache = gameCards.filter(card => {
-                const titleElement = card.querySelector('h3');
-                const pTags = card.querySelectorAll('p');
-                
-                let titleText = titleElement ? titleElement.textContent.toLowerCase() : "";
-                let systemText = "";
-                let authorText = "";
-
-                for (let p of pTags) {
-                    if (p.textContent.includes('ระบบ')) {
-                        systemText = p.textContent.toLowerCase();
-                    }
-                    if (p.textContent.includes('โดย')) {
-                        authorText = p.textContent.toLowerCase();
-                    }
-                }
-
-                const matchesSearch = titleText.includes(searchTerm);
-                
-                let matchesCondition = true;
-                if (modeSystem && modeSystem.checked) {
-                    if (selectedSystem !== "") {
-                        const cleanSystemText = systemText.replace('ระบบ :', '').replace('ระบบ', '').trim();
-                        matchesCondition = (cleanSystemText === selectedSystem);
-                    }
-                } else if (modeAuthor && modeAuthor.checked) {
-                    if (selectedAuthor !== "") {
-                        const cleanAuthorText = authorText.replace('โดย :', '').replace('โดย', '').trim();
-                        const matchAuthor = (cleanAuthorText.toLowerCase() === selectedAuthor);
-                        
-                        if (matchAuthor && selectedModderSystem !== "") {
-                            const cleanSystemText = systemText.replace('ระบบ :', '').replace('ระบบ', '').trim();
-                            const matchSubSys = (cleanSystemText.toLowerCase() === selectedModderSystem.toLowerCase());
-                            matchesCondition = matchAuthor && matchSubSys;
-                        } else {
-                            matchesCondition = matchAuthor;
-                        }
-                    }
-                }
-
-                return matchesSearch && matchesCondition;
-            });
-
-            updatePagination(filteredCardsCache);
-        }
-
-        // --- เริ่มต้นการทำงาน (Initialization & Event Listeners) ---
-        populateSystems();
-        populateAuthors();
-        updateBadges();
-        filterGames();
-
-        if (searchBox) {
-            searchBox.addEventListener('keyup', () => {
-                currentPage = 1;
-                filterGames();
-            });
-        }
-        
-        if (systemFilter) {
-            systemFilter.value = "";
-            systemFilter.addEventListener('change', () => {
-                currentPage = 1;
-                filterGames();
-            });
-        }
-
-        if (authorFilter) {
-            authorFilter.value = "";
-            authorFilter.addEventListener('change', () => {
-                currentPage = 1;
-                selectedModderSystem = ""; 
-                updateModderSystemButtons(authorFilter.value);
-                filterGames();
-            });
-        }
-
-        if (modeSystem && modeAuthor) {
-            modeSystem.addEventListener('change', handleModeChange);
-            modeAuthor.addEventListener('change', handleModeChange);
-        }
-    });
+    if (modeSystem && modeAuthor) {
+        modeSystem.addEventListener('change', handleModeChange);
+        modeAuthor.addEventListener('change', handleModeChange);
+    }
+});
 </script>
 </body>
 </html>
