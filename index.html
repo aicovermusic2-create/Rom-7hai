@@ -6,35 +6,62 @@
     <title>R8M THAI - คลังแพตช์เกมแปลไทย</title>
 	
 	<style>
-        #gameGrid img {
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-    user-select: none;
-    pointer-events: none; /* ป้องกันคลิกขวาและเซฟรูปทุกรูปในการ์ดเกมทันที */
-}
+    /* ป้องกันคลิกขวาและเซฟรูปภาพในการ์ดเกม */
+    #gameGrid img {
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        user-select: none;
+        pointer-events: none;
+    }
 
-/* สไตล์ป้ายริบบิ้นเฉียงมุมซ้ายบนแบบในรูปตัวอย่าง */
-.update-badge {
-    position: absolute;
-    top: 15px;
-    left: -32px;
-    width: 120px;
-    background: linear-gradient(135deg, #f59e0b, #eab308);
-    color: #1e1b4b;
-    font-size: 11px;
-    font-weight: bold;
-    text-align: center;
-    padding: 5px 0;
-    transform: rotate(-45deg);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    z-index: 20;
-    letter-spacing: 1px;
-    pointer-events: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.4);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-}
+    /* จัดกรอบรูปภาพให้ซ่อนส่วนที่เกินและกำหนดมุมโค้ง */
+    .game-card .relative, 
+    .game-card div:has(> img) {
+        position: relative !important;
+        overflow: hidden !important;
+        border-radius: 0.75rem;
+    }
 
-    </style>
+    /* สไตล์ป้าย NEW / UPDATE (มุมบนขวา) */
+    .update-badge {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        background-color: #10b981 !important;
+        color: white !important;
+        font-size: 0.70rem !important;
+        font-weight: 700 !important;
+        padding: 2px 8px !important;
+        border-radius: 6px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+        z-index: 10 !important;
+        letter-spacing: 0.05em !important;
+    }
+
+    /* กรณีที่เป็น Patch UPDATE ให้เปลี่ยนเป็นสีส้ม */
+    .update-badge.update-type {
+        background-color: #f59e0b !important;
+    }
+
+    /* จัดระเบียบปุ่มเปลี่ยนหน้า (Pagination) ด้านล่างให้อยู่ตรงกลางและตัดบรรทัดเมื่อล้นจอ */
+    #pagination {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        margin-top: 20px !important;
+        padding: 0 10px !important;
+    }
+
+    /* ปรับขนาดปุ่มเปลี่ยนหน้าให้กดง่ายและสวยงาม */
+    #pagination button {
+        min-width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -45,7 +72,7 @@
 		<div class="website-update-bar">
     <div class="update-text">
         <span class="dot"></span>
-        <span>อัปเดตล่าสุด: <b>1 ตุลาคม 2569 เวลา 11:35 น.</b></span>
+        <span>อัปเดตล่าสุด: <b>2 ตุลาคม 2569 เวลา 7:00 น.</b></span>
     </div>
     <!-- <div style="font-size: 12px; color: #a7f3d0;">
         Real-time Update ⚡
@@ -9583,33 +9610,24 @@
 <div id="pagination" class="flex justify-center items-center gap-2 mt-8 mb-12"></div>
     </main>
    <script>
-    const itemsPerPage = 21; // กำหนดให้แสดงหน้าละ 21 เกม
-    let currentPage = 1;
+    document.addEventListener("DOMContentLoaded", () => {
+        const itemsPerPage = 21; // แสดงหน้าละ 21 เกม
+        let currentPage = 1;
+        let selectedModderSystem = "";
 
-    const searchBox = document.getElementById('searchBox');
-    const systemFilter = document.getElementById('systemFilter');
-    const authorFilter = document.getElementById('authorFilter');
-    const modeSystem = document.getElementById('modeSystem');
-    const modeAuthor = document.getElementById('modeAuthor');
-    const gameGrid = document.getElementById('gameGrid');
-    
-    // ตัวแปรเก็บค่าการกรอง System ย่อยของ Modder ที่ถูกเลือก
-    let selectedModderSystem = "";
+        const searchBox = document.getElementById('searchBox');
+        const systemFilter = document.getElementById('systemFilter');
+        const authorFilter = document.getElementById('authorFilter');
+        const modeSystem = document.getElementById('modeSystem');
+        const modeAuthor = document.getElementById('modeAuthor');
+        const gameGrid = document.getElementById('gameGrid');
 
-    if (searchBox && gameGrid) {
+        if (!gameGrid) return;
+
         let gameCards = Array.from(gameGrid.getElementsByClassName('game-card'));
 
-        // ฟังก์ชันแปลงวันที่ไทยแบบยืดหยุ่น (รองรับเดือนย่อ/เต็ม และปี พ.ศ. 2 หรือ 4 หลัก)
-        function parseThaiDate(card) {
-            const pTags = card.querySelectorAll('p');
-            let dateText = '';
-            
-            for (let p of pTags) {
-                if (p.textContent.includes('วันที่')) {
-                    dateText = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
-                    break;
-                }
-            }
+        // 1. ฟังก์ชันแปลงวันที่ไทยแบบยืดหยุ่น
+        function parseThaiDateText(dateText) {
             if (!dateText || dateText === '-' || dateText === '') return 0;
 
             const months = {
@@ -9648,7 +9666,7 @@
             return 0;
         }
 
-        // ฟังก์ชันดึงรายชื่อระบบทั้งหมดมาใส่ Combobox อัตโนมัติ พร้อมนับจำนวนเกม
+        // 2. ดึงรายชื่อระบบทั้งหมดมาใส่ Combobox พร้อมนับจำนวน
         function populateSystems() {
             if (!systemFilter) return;
 
@@ -9688,7 +9706,7 @@
             systemFilter.value = currentSelected;
         }
 
-        // ฟังก์ชันดึงรายชื่อผู้จัดทำทั้งหมดมาใส่ Combobox โดยเรียงตามจำนวนเกม (จากมากไปน้อย)
+        // 3. ดึงรายชื่อผู้จัดทำมาใส่ Combobox เรียงตามจำนวนเกม
         function populateAuthors() {
             if (!authorFilter) return;
 
@@ -9727,7 +9745,7 @@
             authorFilter.value = currentSelected;
         }
 
-        // ฟังก์ชันสร้างและจัดการแถบปุ่มเลือก System ย่อยของ Modder ที่เลือก
+        // 4. จัดการแถบปุ่มเลือก System ย่อยของ Modder
         function updateModderSystemButtons(selectedModder) {
             const container = document.getElementById('modderSystemsContainer');
             const buttonsWrapper = document.getElementById('modderSystemButtons');
@@ -9774,15 +9792,14 @@
             container.classList.remove('hidden');
             buttonsWrapper.innerHTML = '';
 
-            // ปุ่ม "ทั้งหมดของเจ้านี้" (นับจำนวนรวมของ Modder คนนี้ทั้งหมด)
-            const allCount = cardsByModder.length;
+            // ปุ่ม "ทั้งหมด"
             const allBtn = document.createElement('button');
             allBtn.className = `px-3 py-1.5 text-xs rounded-lg font-medium whitespace-nowrap transition ${
                 selectedModderSystem === "" 
                     ? 'bg-emerald-600 text-white' 
                     : 'bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
             }`;
-            allBtn.textContent = `ทั้งหมด (${allCount}) เกมส์`;
+            allBtn.textContent = `ทั้งหมด (${cardsByModder.length}) เกมส์`;
             allBtn.onclick = () => {
                 selectedModderSystem = "";
                 updateModderSystemButtons(selectedModder);
@@ -9791,9 +9808,8 @@
             };
             buttonsWrapper.appendChild(allBtn);
 
-            // สร้างปุ่มตามรายชื่อ System ของ Modder พร้อมนับจำนวนเกมแยกตามระบบย่อย
+            // ปุ่มระบบย่อยแต่ละตัว
             Array.from(systemsSet).sort().forEach(system => {
-                // นับจำนวนเกมของ Modder คนนี้เฉพาะระบบนี้
                 const sysCount = cardsByModder.filter(card => {
                     const pTags = card.querySelectorAll('p');
                     for (let p of pTags) {
@@ -9826,7 +9842,7 @@
             });
         }
 
-        // ฟังก์ชันควบคุมการสลับโหมดระหว่าง ระบบ กับ ผู้จัดทำ
+        // 5. สลับโหมดการกรอง (ระหว่าง Platforms และ Modders)
         function handleModeChange() {
             if (modeSystem && modeAuthor) {
                 if (modeSystem.checked) {
@@ -9846,7 +9862,65 @@
             filterGames();
         }
 
-        // ฟังก์ชันแสดงผลตามหน้าและสร้างปุ่ม Pagination
+        // 6. อัปเดตการแสดงผล Badge (NEW / UPDATE) บนรูปภาพการ์ดเกม
+        function updateBadges() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            gameCards.forEach(card => {
+                const imgElement = card.querySelector('img');
+                if (!imgElement) return;
+                const imgContainer = imgElement.parentElement;
+
+                const pTags = card.querySelectorAll('p');
+                let dateText = '';
+                let cardTextContent = card.textContent;
+
+                for (let p of pTags) {
+                    if (p.textContent.includes('วันที่')) {
+                        dateText = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
+                        break;
+                    }
+                }
+                if (!dateText) return;
+
+                const gameTimestamp = parseThaiDateText(dateText);
+                if (!gameTimestamp) return;
+
+                const gameDate = new Date(gameTimestamp);
+                gameDate.setHours(0, 0, 0, 0);
+
+                const diffTime = today - gameDate;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                // แสดงผล Badge เฉพาะเกมในระยะเวลา 1 วันล่าสุด
+                if (diffDays >= 0 && diffDays <= 1) {
+                    if (!imgContainer.querySelector('.update-badge')) {
+                        if (window.getComputedStyle(imgContainer).position === 'static') {
+                            imgContainer.style.position = 'relative';
+                        }
+                        imgContainer.style.overflow = 'hidden';
+
+                        const badge = document.createElement('span');
+                        if (cardTextContent.includes('Patch : V1.') || cardTextContent.includes('UPDATE')) {
+                            badge.className = 'update-badge update-type';
+                            badge.innerText = 'UPDATE';
+                        } else {
+                            badge.className = 'update-badge';
+                            badge.innerText = 'NEW';
+                        }
+                        imgContainer.appendChild(badge);
+                    }
+                } else {
+                    const existingBadge = imgContainer.querySelector('.update-badge');
+                    if (existingBadge) {
+                        existingBadge.remove();
+                    }
+                }
+            });
+        }
+
+        // 7. จัดการระบบแบ่งหน้า (Pagination)
         function updatePagination(filteredCards) {
             const totalPages = Math.ceil(filteredCards.length / itemsPerPage) || 1;
             if (currentPage > totalPages) currentPage = 1;
@@ -9883,7 +9957,7 @@
 
                 button.addEventListener('click', () => {
                     currentPage = i;
-                    filterGames();
+                    updatePagination(filteredCardsCache);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
 
@@ -9891,16 +9965,38 @@
             }
         }
 
-        // ฟังก์ชันสำหรับกรอง และ จัดเรียงการ์ดเกมใหม่
+        let filteredCardsCache = [];
+
+        // 8. ฟังก์ชันหลักสำหรับกรองและเรียงลำดับเกม
         function filterGames() {
-            const searchTerm = searchBox.value.toLowerCase();
+            const searchTerm = searchBox ? searchBox.value.toLowerCase() : "";
             const selectedSystem = systemFilter ? systemFilter.value.toLowerCase().trim() : "";
             const selectedAuthor = authorFilter ? authorFilter.value.toLowerCase().trim() : "";
 
-            gameCards.sort((a, b) => parseThaiDate(b) - parseThaiDate(a));
+            // เรียงลำดับตามวันที่ล่าสุด
+            gameCards.sort((a, b) => {
+                const pTagsA = a.querySelectorAll('p');
+                const pTagsB = b.querySelectorAll('p');
+                let dateA = '', dateB = '';
+                
+                for (let p of pTagsA) {
+                    if (p.textContent.includes('วันที่')) {
+                        dateA = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
+                        break;
+                    }
+                }
+                for (let p of pTagsB) {
+                    if (p.textContent.includes('วันที่')) {
+                        dateB = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
+                        break;
+                    }
+                }
+                return parseThaiDateText(dateB) - parseThaiDateText(dateA);
+            });
+
             gameCards.forEach(card => gameGrid.appendChild(card));
 
-            const filteredCards = gameCards.filter(card => {
+            filteredCardsCache = gameCards.filter(card => {
                 const titleElement = card.querySelector('h3');
                 const pTags = card.querySelectorAll('p');
                 
@@ -9943,22 +10039,24 @@
                 return matchesSearch && matchesCondition;
             });
 
-            updatePagination(filteredCards);
+            updatePagination(filteredCardsCache);
         }
 
-        // รันตั้งค่าเริ่มต้นตอนโหลดหน้าเว็บ
+        // --- เริ่มต้นการทำงาน (Initialization & Event Listeners) ---
         populateSystems();
         populateAuthors();
+        updateBadges();
         filterGames();
 
-        // ผูก Event ต่างๆ
-        searchBox.addEventListener('keyup', () => {
-            currentPage = 1;
-            filterGames();
-        });
+        if (searchBox) {
+            searchBox.addEventListener('keyup', () => {
+                currentPage = 1;
+                filterGames();
+            });
+        }
         
         if (systemFilter) {
-            systemFilter.value = ""; // เคลียร์ค่าเริ่มต้นตอนโหลดหน้าเว็บ
+            systemFilter.value = "";
             systemFilter.addEventListener('change', () => {
                 currentPage = 1;
                 filterGames();
@@ -9966,7 +10064,7 @@
         }
 
         if (authorFilter) {
-            authorFilter.value = ""; // เคลียร์ค่าเริ่มต้นตอนโหลดหน้าเว็บ
+            authorFilter.value = "";
             authorFilter.addEventListener('change', () => {
                 currentPage = 1;
                 selectedModderSystem = ""; 
@@ -9979,98 +10077,7 @@
             modeSystem.addEventListener('change', handleModeChange);
             modeAuthor.addEventListener('change', handleModeChange);
         }
-    }
-	document.addEventListener("DOMContentLoaded", function() {
-    const gameCards = document.querySelectorAll('.game-card');
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    gameCards.forEach(card => {
-        const imgElement = card.querySelector('img');
-        if (!imgElement) return;
-        const imgContainer = imgElement.parentElement;
-
-        const pTags = card.querySelectorAll('p');
-        let dateText = '';
-        let cardTextContent = card.textContent;
-
-        for (let p of pTags) {
-            if (p.textContent.includes('วันที่')) {
-                dateText = p.textContent.replace('วันที่ :', '').replace('วันที่', '').trim();
-                break;
-            }
-        }
-        if (!dateText) return;
-
-        const gameTimestamp = parseThaiDateText(dateText);
-        if (!gameTimestamp) return;
-
-        const gameDate = new Date(gameTimestamp);
-        gameDate.setHours(0, 0, 0, 0);
-
-        const diffTime = today - gameDate;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        // 🟢 แสดงผลเฉพาะเกมในระยะเวลา 1 วันล่าสุด
-        if (diffDays >= 0 && diffDays <= 1) {
-            if (!imgContainer.querySelector('.update-badge')) {
-                if (window.getComputedStyle(imgContainer).position === 'static') {
-                    imgContainer.style.position = 'relative';
-                }
-                imgContainer.style.overflow = 'hidden';
-
-                const badge = document.createElement('span');
-                
-                // เช็คว่าถ้าเป็น Patch อัปเดต ให้ขึ้นคำว่า UPDATE ถ้ามาใหม่สดๆ ให้ขึ้น NEW
-                if (cardTextContent.includes('Patch : V1.') || cardTextContent.includes('UPDATE')) {
-                    badge.className = 'update-badge update-type';
-                    badge.innerText = 'UPDATE';
-                } else {
-                    badge.className = 'update-badge';
-                    badge.innerText = 'NEW';
-                }
-
-                imgContainer.appendChild(badge);
-            }
-        } else {
-            const existingBadge = imgContainer.querySelector('.update-badge');
-            if (existingBadge) {
-                existingBadge.remove();
-            }
-        }
     });
-
-    function parseThaiDateText(dateText) {
-        const months = {
-            "มกราคม": 0, "ม.ค.": 0, "กุมภาพันธ์": 1, "ก.พ.": 1, 
-            "มีนาคม": 2, "มี.ค.": 2, "เมษายน": 3, "เม.ย.": 3, 
-            "พฤษภาคม": 4, "พ.ค.": 4, "มิถุนายน": 5, "มิ.ย.": 5, 
-            "กรกฎาคม": 6, "ก.ค.": 6, "สิงหาคม": 7, "ส.ค.": 7, 
-            "กันยายน": 8, "ก.ย.": 8, "ตุลาคม": 9, "ต.ค.": 9, 
-            "พฤศจิกายน": 10, "พ.ย.": 10, "ธันวาคม": 11, "ธ.ค.": 11
-        };
-
-        let day = 0, month = -1, year = 2026;
-        const parts = dateText.split(/\s+/);
-        
-        for (let part of parts) {
-            if (!isNaN(part) && day === 0 && parseInt(part, 10) <= 31) {
-                day = parseInt(part, 10);
-            } else if (months[part] !== undefined) {
-                month = months[part];
-            } else if (!isNaN(part) && parseInt(part, 10) > 31) {
-                let y = parseInt(part, 10);
-                if (y < 100) y += 2500;
-                year = y - 543;
-            }
-        }
-
-        if (day > 0 && month !== -1) {
-            return new Date(year, month, day).getTime();
-        }
-        return 0;
-    }
-});
 </script>
 </body>
 </html>
