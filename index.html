@@ -22,7 +22,7 @@
         border-radius: 0.75rem;
     }
 
-    /* สไตล์พื้นฐานป้ายคาดเฉียงมุมซ้ายบน (Ribbon Badge) */
+    /* สไตล์ป้ายคาดเฉียงมุมซ้ายบน NEW (สีเขียว) */
     .update-badge {
         position: absolute !important;
         top: 15px !important;
@@ -37,16 +37,7 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
         z-index: 10 !important;
         letter-spacing: 0.05em !important;
-    }
-
-    /* สีส้มสำหรับ UPDATE (เกมชื่อซ้ำ) */
-    .update-badge.update-orange {
-        background-color: #f59e0b !important; 
-    }
-
-    /* สีเขียวสำหรับ NEW (เกมใหม่ชื่อไม่ซ้ำ) */
-    .update-badge.update-green {
-        background-color: #10b981 !important; 
+        background-color: #10b981 !important; /* สีเขียว */
     }
 
     /* จัดระเบียบปุ่มเปลี่ยนหน้า (Pagination) ด้านล่างให้อยู่ตรงกลางและตัดบรรทัดเมื่อล้นจอ */
@@ -135,7 +126,44 @@
         <div id="gameGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 		
 
-
+         
+		 <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
+    <div>
+        <img src="https://raw.githubusercontent.com/aicovermusic2-create/Rom-7hai/main/images/52e5afcf-a8af-4f75-a363-b31b8cadcc4d.jpg" alt="Game Cover" class="w-full h-48 object-cover">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Alone in the Dark: The New Nightmare</h3>
+            <p class="text-sm text-slate-300 mt-2">
+                โดย : <a href="https://www.facebook.com/memorycard.th" target="_blank" class="text-emerald-400 hover:underline">Memory Card TH</a>
+            </p>
+            <p class="text-sm text-slate-300 mt-1">Patch : V1.0</p>
+            <p class="text-sm text-slate-300 mt-1">ระบบ : Play Station</p>
+            <p class="text-sm text-slate-300 mt-1">วันที่ : 2 ตุลาคม 2569</p>
+            <p class="text-sm text-slate-300 mt-1">Source : Alone in the Dark - The New Nightmare (USA) (Disc 1) (Track 1).bin · (Disc 2) (Track 1) — ต้องแปะครบทั้ง 2 แผ่น</p>
+        </div>
+    </div>
+    <div class="p-4 pt-0">
+        <a href="http://memorycardth.com/#/Alone%20in%20the%20Dark%3A%20The%20New%20Nightmare/0" target="_blank" class="block text-center bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg font-medium transition">Patch (ดาวน์โหลดแพตช์)</a>
+    </div>
+</div>
+		 
+		 <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
+    <div>
+        <img src="https://raw.githubusercontent.com/aicovermusic2-create/Rom-7hai/main/images/73394275-fa19-4388-956b-faaea2207889.jpg" alt="Game Cover" class="w-full h-48 object-cover">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Prince of Persia: Warrior Within</h3>
+            <p class="text-sm text-slate-300 mt-2">
+                โดย : <a href="https://www.facebook.com/memorycard.th" target="_blank" class="text-emerald-400 hover:underline">Memory Card TH</a>
+            </p>
+            <p class="text-sm text-slate-300 mt-1">Patch : V1.0</p>
+            <p class="text-sm text-slate-300 mt-1">ระบบ : Play Station 2</p>
+            <p class="text-sm text-slate-300 mt-1">วันที่ : 2 ตุลาคม 2569</p>
+            <p class="text-sm text-slate-300 mt-1">Source : Prince of Persia - Warrior Within (USA) (En,Fr,Es).iso</p>
+        </div>
+    </div>
+    <div class="p-4 pt-0">
+        <a href="http://memorycardth.com/#/Prince%20of%20Persia%3A%20Warrior%20Within/0" target="_blank" class="block text-center bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg font-medium transition">Patch (ดาวน์โหลดแพตช์)</a>
+    </div>
+</div>
 
         <div class="game-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col justify-between hover:border-emerald-500 transition">
     <div>
@@ -1046,9 +1074,9 @@
             <p class="text-sm text-slate-300 mt-2">
                 โดย : <a href="https://www.facebook.com/memorycard.th" target="_blank" class="text-emerald-400 hover:underline">Memory Card TH</a>
             </p>
-            <p class="text-sm text-slate-300 mt-1">Patch : V1.1</p>
+            <p class="text-sm text-slate-300 mt-1">Patch : V1.2</p>
             <p class="text-sm text-slate-300 mt-1">ระบบ : Play Station</p>
-            <p class="text-sm text-slate-300 mt-1">วันที่ : 29 กันยายน 2569</p>
+            <p class="text-sm text-slate-300 mt-1">วันที่ : 2 ตุลาคม 2569</p>
             <p class="text-sm text-slate-300 mt-1">Source : Final Fantasy VII (USA) (Disc 1).bin (Disc 2-3) ต้องแปะครบทั้ง 3 แผ่น</p>
         </div>
     </div>
@@ -7531,9 +7559,9 @@
             <p class="text-sm text-slate-300 mt-2">
                 โดย : <a href="https://www.facebook.com/memorycard.th" target="_blank" class="text-emerald-400 hover:underline">Memory Card TH</a>
             </p>
-            <p class="text-sm text-slate-300 mt-1">Patch : V1.1</p>
+            <p class="text-sm text-slate-300 mt-1">Patch : V1.2</p>
             <p class="text-sm text-slate-300 mt-1">ระบบ : Play Station</p>
-            <p class="text-sm text-slate-300 mt-1">วันที่ : 25 กันยายน 2569</p>
+            <p class="text-sm text-slate-300 mt-1">วันที่ : 2 ตุลาคม 2569</p>
             <p class="text-sm text-slate-300 mt-1">Source : Dino Crisis (USA) (Rev 1) (Track 1).bin</p>
         </div>
     </div>
@@ -10021,18 +10049,8 @@
         filterGames();
     }
 
-    // 6. อัปเดตการแสดงผล Badge (NEW สีเขียว / UPDATE สีส้ม ตามชื่อเกมซ้ำ)
+    // 6. อัปเดตการแสดงผล Badge (แสดงเฉพาะป้าย NEW สีเขียว ใน 1 วันล่าสุด)
     function updateBadges() {
-        // นับจำนวนชื่อเกมที่ซ้ำกันทั้งหมดในระบบ เพื่อแยกแยะ NEW กับ UPDATE
-        const titleCounts = {};
-        gameCards.forEach(card => {
-            const titleElement = card.querySelector('h3');
-            if (titleElement) {
-                let titleText = titleElement.textContent.trim().toLowerCase();
-                titleCounts[titleText] = (titleCounts[titleText] || 0) + 1;
-            }
-        });
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -10041,7 +10059,6 @@
             if (!imgElement) return;
             const imgContainer = imgElement.parentElement;
 
-            const titleElement = card.querySelector('h3');
             const pTags = card.querySelectorAll('p');
             let dateText = '';
 
@@ -10051,7 +10068,7 @@
                     break;
                 }
             }
-            if (!dateText || !titleElement) return;
+            if (!dateText) return;
 
             const gameTimestamp = parseThaiDateText(dateText);
             if (!gameTimestamp) return;
@@ -10062,10 +10079,7 @@
             const diffTime = today - gameDate;
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-            let titleText = titleElement.textContent.trim().toLowerCase();
-            let isDuplicateName = titleCounts[titleText] > 1;
-
-            // แสดงผล Badge เฉพาะเกมในระยะเวลา 1 วันล่าสุด
+            // ถ้าอยู่ในช่วง 1 วันล่าสุด ให้แสดงป้าย NEW สีเขียว
             if (diffDays >= 0 && diffDays <= 1) {
                 if (!imgContainer.querySelector('.update-badge')) {
                     if (window.getComputedStyle(imgContainer).position === 'static') {
@@ -10074,16 +10088,8 @@
                     imgContainer.style.overflow = 'hidden';
 
                     const badge = document.createElement('span');
-                    
-                    if (isDuplicateName) {
-                        // เกมที่มีชื่อซ้ำกัน -> ป้าย UPDATE (สีส้ม)
-                        badge.className = 'update-badge update-orange';
-                        badge.innerText = 'UPDATE';
-                    } else {
-                        // เกมใหม่ที่ไม่มีชื่อซ้ำ -> ป้าย NEW (สีเขียว)
-                        badge.className = 'update-badge update-green';
-                        badge.innerText = 'NEW';
-                    }
+                    badge.className = 'update-badge';
+                    badge.innerText = 'NEW';
                     imgContainer.appendChild(badge);
                 }
             } else {
