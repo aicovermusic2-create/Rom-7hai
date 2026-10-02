@@ -22,15 +22,15 @@
         border-radius: 0.75rem;
     }
 
-    /* สไตล์ป้ายคาดเฉียงมุม (Ribbon Badge) แบบเดิม */
+    /* สไตล์ป้ายคาดเฉียงมุมซ้ายบน (Ribbon Badge) คำว่า UPDATE ทั้งหมด */
     .update-badge {
         position: absolute !important;
-        top: 12px !important;
-        right: -30px !important;
-        transform: rotate(45deg) !important;
+        top: 15px !important;
+        left: -30px !important;
+        transform: rotate(-45deg) !important;
         width: 120px !important;
         text-align: center !important;
-        background-color: #10b981 !important;
+        background-color: #f59e0b !important; /* สีส้มทอง */
         color: white !important;
         font-size: 0.65rem !important;
         font-weight: 700 !important;
@@ -38,11 +38,6 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
         z-index: 10 !important;
         letter-spacing: 0.05em !important;
-    }
-
-    /* กรณีที่เป็น Patch UPDATE ให้เปลี่ยนแถบคาดเป็นสีส้ม */
-    .update-badge.update-type {
-        background-color: #f59e0b !important;
     }
 
     /* จัดระเบียบปุ่มเปลี่ยนหน้า (Pagination) ด้านล่างให้อยู่ตรงกลางและตัดบรรทัดเมื่อล้นจอ */
@@ -73,7 +68,7 @@
 		<div class="website-update-bar">
     <div class="update-text">
         <span class="dot"></span>
-        <span>อัปเดตล่าสุด: <b>2 ตุลาคม 2569 เวลา 7:00 น.</b></span>
+        <span>อัปเดตล่าสุด: <b>2 ตุลาคม 2569 เวลา 8:42 น.</b></span>
     </div>
     <!-- <div style="font-size: 12px; color: #a7f3d0;">
         Real-time Update ⚡
